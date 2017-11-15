@@ -1,0 +1,39 @@
+body {
+	background-image: url('./assets/background.jpg');
+    background-repeat: no-repeat;
+    background-size:1500px;
+}
+
+.background {
+	background-color: #ffffff;
+	opacity: 0.7;
+	width:100vw;
+	height:100vh;
+	position:absolute;
+	z-index:-1;
+	top:0;
+}
+	
+.recipes-header {
+    margin: 25px;
+    height: 60px;
+    background-color: rgb(253, 68, 68);
+    color: white;
+    font-weight: bold;
+}
+
+.strawberry {
+	width:61px;
+	height:61px;
+}
+.recipes-title {
+    margin-top: 2px;
+    font-size: 20px;
+}
+
+.glyphicon-user {
+	margin-top: 20px;
+}
+.user-icon {
+	font-size:18px;
+}
