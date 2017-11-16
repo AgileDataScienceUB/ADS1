@@ -1,0 +1,13 @@
+body {background-color: #fed5d5;}
+.login {
+	background-color: #fed5d5;
+}
+.login-text {
+	margin-top: 5px;
+}
+.login-input {
+	margin-top:5px;
+}
+.login-submit {
+	margin-top: 10px;
+}
