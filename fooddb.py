@@ -18,14 +18,15 @@ class Recipes(object):
             self.recipes = pd.read_json(path_or_buf=filename).T
             self.recipes = self.recipes.reset_index()
             self.recipes.columns = ['name','c','i','l','p','s','v']
-            self.collection.insert_many(pd.DataFrame.to_dict(db,orient='records'))
+            self.recipes['name'] = self.recipes['name'].str.replace('.','')
+            self.collection.insert_many(pd.DataFrame.to_dict(self.recipes,orient='records'))
         self.recipes = self.recipes.set_index('name')
 
     def getRecipes(self):
-        return self.recipes.drop('_id', axis=1)
+        return self.recipes
     
     def getRecipe(self, name):
-        return self.recipes[self.recipes['name']==name].drop('_id', axis=1)
+        return self.recipes[self.recipes['name']==name]
 
 class Users(object):
     def __init__(self, filename=None):
