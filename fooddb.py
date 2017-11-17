@@ -76,13 +76,16 @@ class Ratings(object):
         db = conn['app']
         self.collection = db.ratings
         if filename!=None:
-            r = pd.read_csv(filename,index_col = 0)
+            r = pd.read_csv(filename,index_col = 0,encoding='ISO-8859-1')
             r = pd.DataFrame.to_dict(r.T)
             for k, v in list(r.items()):
                 for k2, v2 in list(v.items()):
                     if v2 == 0: del v[k2]
             for k, v in list(r.items()):
                 v['username'] = k
+                for k2, v2 in list(v.items()):
+                	if('.' in k2):
+                		v[k2.replace('.','')] = v.pop(k2)
                 self.collection.insert_one(v)
         self.ratings = pd.DataFrame()
         for d in self.collection.find():
