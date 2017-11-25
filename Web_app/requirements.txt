@@ -1,0 +1,6 @@
+Flask
+Flask-Login
+Flask-Script
+WTForms
+Flask-PyMongo
+gunicorn
