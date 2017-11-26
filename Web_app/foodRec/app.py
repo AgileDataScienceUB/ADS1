@@ -11,15 +11,20 @@ from flask_login import login_required
 
 from .forms import LoginForm
 from .model import User
+from .model import Users
+from .model import Recipes
+from .model import Ratings
 
 import json
 
 import bson
+import pandas as pd
+import pymongo
+
+import os
 
 app = Flask(__name__)
 
-app.config['MONGO_DBNAME'] = 'ads'
-app.config['MONGO_URI'] = 'mongodb://mbrufau:hola@ds063725.mlab.com:63725/ads'
 app.config['SECRET_KEY'] = 'alsfkdgasdlkgja12345378' # Create your own.
 app.config['SESSION_PROTECTION'] = 'strong'
 
@@ -28,12 +33,12 @@ login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = 'login'
 
-mongo = PyMongo(app)
+#mongo = PyMongo(app)
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(username):
 	"""Flask-Login hook to load a User instance from ID."""
-	u = mongo.db.users.find_one({"username": user_id})
+	u = Users.getUser(username)
 	if not u:
   		return None	
 	return User(u['username'])
@@ -55,11 +60,11 @@ def login():
 	if request.method == 'POST' and form.validate():
 		username = form.username.data.lower().strip()
 		password = form.password.data.lower().strip()
-		user = mongo.db.users.find_one({"username": form.username.data})
+		user = Users.getUser(username)
 		if user and User.validate_login(user['password'], form.password.data):  
 			user_obj = User(user['username'])
 			login_user(user_obj)
-			return redirect(url_for('products_list'))
+			return redirect(url_for('user', username=username))
 		else:
 			error = 'Incorrect username or password.'
 	return render_template('user/login.html', form=form, error=error)
@@ -67,7 +72,7 @@ def login():
 @app.route('/logout/')
 def logout():
   logout_user()
-  return redirect(url_for('products_list'))
+  return redirect(url_for('recipes_list'))
 
 @app.route('/registration/', methods=['GET', 'POST'])
 def registration():
@@ -93,7 +98,23 @@ def recipes_list():
 def recipe_detail(recipe_id):
 	return render_template('recipes/detail.html')
 
-@app.route('/user/<user_id>/')
+@app.route('/user/<username>/')
 @login_required
-def user(user_id):
+def user(username):
 	return render_template('user/user.html')
+
+# Hack to render style sheets
+app.static_folder = 'static'
+
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)

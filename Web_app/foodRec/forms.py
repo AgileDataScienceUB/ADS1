@@ -17,7 +17,7 @@ class LoginForm(Form):
     password = PasswordField('Password', [required()])
 
 class RegistrationForm(Form):
-	username = TextField('Username', [required()])
-	password = PasswordField('Password', [required()])
-	repeatPassword = PasswordField('Repeat Password', [required()])
+  	username = TextField('Username', [required()])
+  	password = PasswordField('Password', [required()])
+  	repeatPassword = PasswordField('Repeat Password', [required()])
 	
