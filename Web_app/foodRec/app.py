@@ -19,7 +19,6 @@ import json
 
 import bson
 import pandas as pd
-import pymongo
 
 import os
 
@@ -60,7 +59,7 @@ def login():
 	if request.method == 'POST' and form.validate():
 		username = form.username.data.lower().strip()
 		password = form.password.data.lower().strip()
-		user = Users.getUser(username)
+		user = Users().getUser(username)
 		if user and User.validate_login(user['password'], form.password.data):  
 			user_obj = User(user['username'])
 			login_user(user_obj)
@@ -92,7 +91,9 @@ def index():
 
 @app.route('/recipes/')
 def recipes_list():
-  	return render_template('recipes/index.html')
+	recipes = Recipes().getRecipes()
+	return render_template('recipes/index.html', recipes=recipes)
+
 
 @app.route('/recipes/<recipe_id>/')
 def recipe_detail(recipe_id):
