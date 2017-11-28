@@ -10,6 +10,7 @@ from flask_login import login_user, logout_user
 from flask_login import login_required
 
 from .forms import LoginForm
+from .forms import RegistrationForm
 from .model import User
 from .model import Users
 from .model import Recipes
@@ -82,7 +83,7 @@ def registration():
 	if request.method == 'POST' and form.validate():
 		a = 0
 		#validation of registration and post to mongo
-	return render_template('user/login.html', form=form, error=error)
+	return render_template('user/registration.html', form=form, error=error)
 
 
 @app.route('/')

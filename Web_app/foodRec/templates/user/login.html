@@ -1,1 +1,36 @@
-login form
+<link rel="stylesheet" href="/static/user/login.css" type="text/css">
+{% extends 'base.html' %}
+{% block main %}
+{% if session['logged_in'] %}
+<p>You're logged in already!</p>
+{% else %}
+ 
+ 
+<form action="/login" method="POST">
+	<div class="login">
+		<div class="login-screen">
+			<div class="app-title">
+				<h1>Login</h1>
+			</div>
+ 
+			<div class="login-form">
+				<div class="control-group">
+				<input type="text" class="login-field" value="" placeholder="Username or email" name="username">
+				<label class="login-field-icon fui-user" for="login-name"></label>
+				</div>
+ 
+				<div class="control-group">
+				<input type="password" class="login-field" value="" placeholder="Password" name="password">
+				<label class="login-field-icon fui-lock" for="login-pass"></label>
+				</div>
+ 
+                <input type="submit" value="Log in" class="btn btn-large btn-block">
+            	<a class="link-log" href="">Do you forget your password?</a>
+			    <br>
+			</div>
+		</div>
+	</div>
+</form>
+ 
+{% endif %}
+{% endblock %}

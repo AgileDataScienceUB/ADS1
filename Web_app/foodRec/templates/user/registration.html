@@ -1,1 +1,40 @@
-registration form
+<link rel="stylesheet" href="/static/user/registration.css" type="text/css">
+{% extends 'base.html' %}
+{% block main %}
+ 
+<form action="/registration/" method="POST">
+	<div class="registration">
+		<div class="registration-screen">
+			<div class="app-title">
+				<h1>Registration</h1>
+			</div>
+ 
+			<div class="registration-form">
+				<div class="control-group">
+				<input type="text" class="registration-field" value="" placeholder="Username" name="username">
+				<label class="registration-field-icon fui-user" for="registration-name"></label>
+				</div>
+
+				<div class="control-group">
+				<input type="email" class="registration-field" value="" placeholder="Email" name="email">
+				<label class="registration-field-icon fui-user" for="registration-email"></label>
+				</div>
+ 
+				<div class="control-group">
+				<input type="password" class="registration-field" value="" placeholder="Password" name="password">
+				<label class="registration-field-icon fui-lock" for="registration-pass"></label>
+				</div>
+
+				<div class="control-group">
+				<input type="password" class="registration-field" value="" placeholder="Repeat Password" name="repeatPassword">
+				<label class="registration-field-icon fui-lock" for="registration-pass"></label>
+				</div>
+ 
+                <input type="submit" value="Register" class="btn btn-large btn-block">
+			    <br>
+			</div>
+		</div>
+	</div>
+</form>
+ 
+{% endblock %}
