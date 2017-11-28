@@ -1,0 +1,104 @@
+.recipes-filters-title {
+    padding-left: 40px;
+    font-size: 25px;
+    font-family: sans-serif;
+}
+.recipes-filters {
+    margin-left: 35px;
+    height: 450px;
+    background-color: #ffffff;
+    border: 1px solid;
+}
+
+.filters-type-title {
+	background-color: grey;
+    background-color: #ececec;
+    height: 40px;
+    padding-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.filters-type-content {
+	border-bottom: 1px solid;
+	height: 70px;
+	padding: 7px;
+}
+.filters-checkbox {
+	margin: 3px;
+}
+.filters-time-title {
+	background-color: grey;
+    background-color: #ececec;
+    height: 40px;
+    padding-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.filters-time-content {
+	border-bottom: 1px solid;
+	height: 70px;
+	padding: 7px;
+}
+
+.filters-ing-title {
+	background-color: grey;
+    background-color: #ececec;
+    height: 40px;
+    padding-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.filters-ing-content {
+	border-bottom: 1px solid;
+	height: 70px;
+	padding: 7px;
+}
+
+.filters-discard-title {
+	background-color: grey;
+    background-color: #ececec;
+    height: 40px;
+    padding-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.filters-discard-content {
+	//border-bottom: 1px solid;
+	height: 70px;
+	padding: 7px;
+}
+
+.discard-input {
+	border: 0;
+	border-bottom: 1px solid #9a9a9a;
+	margin-left: 10px;
+    width: 200px;
+    padding-left: 5px;
+    outline: none;
+}
+
+.submit-filters {
+    margin-left: 10px;
+    margin-top: 10px;
+    width: 100px;
+    background-color: #fd4444;
+    border: none;
+    color: white;
+    font-weight: bold;
+    outline: none;
+}
+
+.recipes-recipe {
+	margin-left: 100px;
+    height: 450px;
+    width: 59.1% !important;
+    overflow: auto;
+}

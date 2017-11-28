@@ -1,0 +1,36 @@
+.recipe {
+	height: 200px;
+	width: 100%;
+	background-color: white;
+	margin: 0px !important;
+	border: 2px solid rgb(206, 206, 206);
+}
+
+.recipe-detail-title {
+    font-weight: bold;
+    font-size: 35px;
+    color: #fd4444;
+    margin-top: 10px;
+    margin-left: 10px !important;
+}
+
+.recipe-detail-description {
+    margin-left: 10px !important;
+    font-size: 20px;
+    color: #adabab;
+}
+
+.recipe-detail-time {
+    margin-left: 10px !important;
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.brandade {
+    margin-top: 10px;
+    max-height: 172px;
+}
+.recipe-foto{
+	text-align: right;
+}

@@ -1,0 +1,37 @@
+{% macro recipeSummary(recipe, show_image=false) %}
+    <div class="recipe-summary">
+      {% if show_image %}
+        <div class="row recipe">
+          <div class="col-xs-7 recipe-detail">
+            <div class="row recipe-detail-title">
+              { recipe.name }
+            </div>
+            //<div class="row recipe-detail-description">
+            //  Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
+            //</div>
+            <div class="row recipe-detail-time">
+              Preparation time: { recipe.c + recipe.p } minutes
+            </div>
+          </div>
+          //<div class="col-xs-5 recipe-foto">  
+          //  <img class="brandade" src="./static/assets/brandade.jpg"></img>
+          //</div>
+
+          
+        </div>
+      {% else %}
+        <div class="row recipe">
+          <div class="col-xs-7 recipe-detail">
+            <div class="row recipe-detail-title">
+              { recipe.name }
+            </div>
+            //<div class="row recipe-detail-description">
+            //  Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
+            //</div>
+            <div class="row recipe-detail-time">
+              Preparation time: { recipe.c + recipe.p } minutes
+            </div>
+          </div>
+      {% endif %}
+    </div>
+{% endmacro %}

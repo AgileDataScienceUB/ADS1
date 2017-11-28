@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% from 'recipes/common.html' import recipeSummary %}
+
+{% block main %}
+	<div class="row recipes-content">
+		<div class="col-xs-3 recipes-filters">
+			<div class="row filters-type-title">
+				Type of food
+			</div> 
+			<div class="row filters-type-content">
+				<input class="filters-checkbox" type="checkbox" name="Italian" value="Italian">
+					Italian
+				</input><br>
+				<input class="filters-checkbox" type="checkbox" name="Vegan" value="Vegan">
+					Vegan
+				</input>	
+			</div>
+			<div class="row filters-time-title">
+				Time of preparation (min)
+			</div> 
+			<div class="row filters-time-content">
+				<div class="col-xs-1">0</div>
+				<div class="col-xs-8"> <input type="range" min="0" max="500" value="250" class="slider" id="myRange"></div>	
+				<div class="col-xs-2">500</div>
+			</div>
+			<div class="row filters-ing-title">
+				Number of ingredients
+			</div> 
+			<div class="row filters-ing-content">
+				<div class="col-xs-1">0</div>
+				<div class="col-xs-8"> <input type="range" min="0" max="100" value="50" class="slider" id="myRange"></div>	
+				<div class="col-xs-2">100</div>
+			</div>
+			<div class="row filters-discard-title">
+				Discard ingredients
+			</div>
+			<div class="row filters-discard-content">
+				<input class="discard-input" type="text" name="Discard" placeholder="pizza">
+				</input><br>
+				<button class="submit-filters" type="button">Submit</button>
+			</div> 
+		</div>
+		<div class="col-xs-9 recipes-recipe">
+			{% for recipe in recipes %}
+				{ recipeSummary(recipe) }
+			{% endfor %}
+		</div>
+	</div>
+{% endblock main %}
