@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="/static/recipes/index.css" type="text/css">
+<link rel="stylesheet" href="/static/recipes/common.css" type="text/css">
+{% extends 'base.html' %}
+{% from 'recipes/common.html' import recipeSummary %}
+{% from 'recipes/common.html' import edit_field %}
+
+{% block main %}
+	<div class="row recipes-content" style="position:absolute;left:0;">
+		<div class="col-xs-3 recipes-filters">
+			<form method="POST" class="form-vertical">
+				<div class="row filters-type-title">
+					Type of food
+				</div> 
+				<div class="row filters-type-content">
+					<input class="filters-checkbox" type="checkbox" name="italian">
+						Italian
+					</input><br>
+					<input class="filters-checkbox" type="checkbox" name="vegan">
+						Vegan
+					</input>	
+				</div>
+				<div class="row filters-time-title">
+					Time of preparation (min)
+				</div> 
+				<div class="row filters-time-content">
+					<div class="col-xs-1">0</div>
+					<div class="col-xs-8"> <input type="range" min="0" max="500" class="slider" id="myRange" name="time" value="250"></div>	
+					<div class="col-xs-2">500</div>
+				</div>
+				<div class="row filters-ing-title">
+					Number of ingredients
+				</div> 
+				<div class="row filters-ing-content">
+					<div class="col-xs-1">0</div>
+					<div class="col-xs-8"> <input type="range" min="0" max="100" class="slider" id="myRange" name="ingredients" value="50"></div>	
+					<div class="col-xs-2">100</div>
+				</div>
+				<div class="row filters-discard-title">
+					Recipe Name
+				</div>
+				<div class="row filters-discard-content">
+					<input class="discard-input" type="text" name="search" placeholder="pizza" vaule="">
+					</input><br>
+					<div class="form-actions">
+				    <button class="submit-filters" type="submit" class="btn">Filter</button>
+				    </div>
+				</div>
+			</form>
+			
+		</div>
+		<div class="col-xs-9 recipes-recipe">
+			{% for index, recipe in recipes.iterrows() %}
+				{{ recipeSummary(recipe) }}
+			{% else %}
+				<div class="recipe-summary">
+		        </div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock main %}
