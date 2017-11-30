@@ -14,7 +14,6 @@ from .forms import RegistrationForm
 from .model import User
 from .model import Users
 from .model import Recipes
-from .model import Ratings
 
 import json
 
