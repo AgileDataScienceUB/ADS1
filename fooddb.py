@@ -56,6 +56,7 @@ class Recipes(object):
         self.filtered = self.filtered.set_index('name')
         return self.filtered
 
+
 class Users(object):
     def __init__(self, filename=None):
         try:
@@ -74,7 +75,7 @@ class Users(object):
             self.users = self.users.set_index('username')
             
             # Version with users + ratings
-            # Probably doesn't work right now but just in case
+            # Probably doesn't work right now
             ''' 
             r = pd.read_csv('ratingsFull.csv',index_col = 0, encoding="ISO-8859-1")
             r = pd.DataFrame.to_dict(r.T)
@@ -136,6 +137,16 @@ class Users(object):
             self.users = self.users[self.users['username'] != username]
         print('User deleted')
         return True
+    
+    def addRating(self, username, recipe, rating):
+        if(self.getUser(username).empty): 
+            return False
+        self.collection.update_one({'username':username},{"$set":{recipe:rating}})
+        if not self.users.empty:
+            self.users[username,recipe]=rating
+        print('Rating added')
+        return True
+
 
 # Obsolete but still here in case I've fucked up
 '''
