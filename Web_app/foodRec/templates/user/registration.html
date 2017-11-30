@@ -10,6 +10,7 @@
 			</div>
  
 			<div class="registration-form">
+				{% if error %}<p class="alert alert-error">{{ error }}</p>{% endif %}
 				<div class="control-group">
 				<input type="text" class="registration-field" value="" placeholder="Username" name="username">
 				<label class="registration-field-icon fui-user" for="registration-name"></label>
