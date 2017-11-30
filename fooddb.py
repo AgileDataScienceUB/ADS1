@@ -34,8 +34,11 @@ class Recipes(object):
             for d in self.collection.find({"name":name}):
                 self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
             self.recipe = self.recipe.set_index('name')
+            if self.recipe.empty: print('Recipe not found')
             return self.recipe
-        if not self.recipes.index.str.contains(name).any(): return 'Recipe not found'
+        if not self.recipes.index.str.contains(name).any(): 
+            print('Recipe not found')
+            return False
         return self.recipes.loc[name]
     
     # TODO: Filter by excluded ingredients
