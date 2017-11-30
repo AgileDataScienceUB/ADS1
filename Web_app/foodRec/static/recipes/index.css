@@ -103,6 +103,14 @@
     overflow: auto;
 }
 
-.recipes-content {
+.recipes-filters-title {
+    padding-left: 40px;
+    font-size: 25px;
+    font-family: sans-serif;
+}
+.recipes-filters {
+    margin-left: 40px;
+    height: 450px;
     background-color: #ffffff;
+    border: 1px solid;
 }

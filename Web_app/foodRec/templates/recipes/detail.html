@@ -1,1 +1,80 @@
-recipe detail
+<link rel="stylesheet" href="/static/recipes/detail.css" type="text/css">
+<link rel="stylesheet" href="/static/recipes/common.css" type="text/css">
+{% extends 'base.html' %}
+
+{% block main %}
+	<div class="row detail-content">
+		<div class="row detail-row-title">
+			<div class="col-xs-8 detail-title">
+				{{ recipe_name }}
+			</div>
+			<div class="col-xs-4 detail-rating">
+				Rating: {{ rating }}
+			</div>
+		</div>
+		<div class="row detail-row-image">
+			<div class="col-xs-5 detail-image">
+				<img class="brandade" src="/static/assets/brandade.jpg"></img>
+			</div>
+			<div class="col-xs-7 detail-summary">
+				<div class="row detail-description">
+					Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
+				</div>
+				<div class="row detail-details">
+					<div class="row detail-details-row">
+						<div class="col-xs-6 detail-details-title">
+							Preparation time:
+						</div>
+						<div class="col-xs-6 detail-details-value">
+							{{ recipe.p.values[0] }} minutes
+						</div>
+					</div>
+					<div class="row detail-details-row">
+						<div class="col-xs-6 detail-details-title">
+							Cooking time:
+						</div>
+						<div class="col-xs-6 detail-details-value">
+							{{ recipe.c.values[0] }} minutes
+						</div>
+					</div>
+					<div class="row detail-details-row">
+						<div class="col-xs-6 detail-details-title">
+							Serves:
+						</div>
+						<div class="col-xs-6 detail-details-value">
+							{{ recipe.s.values[0] }}
+						</div>
+					</div>
+					<div class="row detail-details-row">
+						<div class="col-xs-6 detail-details-title">
+							Dietary:
+						</div>
+						<div class="col-xs-6 detail-details-value">
+							{% if recipe.v.values[0] == 1 %}
+								Vegan
+							{% else %}
+								None
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row detail-subtitle">
+			Ingredients:
+		</div>
+		<div class="row detail-ingredients">
+			{% for ingredient in recipe.l.values[0] %}
+				{{ingredient}}
+				<br>
+			{% endfor %}
+
+		</div>
+		<div class="row detail-subtitle">
+			Method:
+		</div>
+		<div class="row detail-method">
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		</div>
+	</div>
+{% endblock main %}

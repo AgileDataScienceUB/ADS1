@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/static/recipes/common.css" type="text/css">
+
 {% macro edit_field(field, catch_kwargs=true) %}
   <div class="control-group{% if field.errors %} error{% endif %}">
     {{ field.label(class="control-label") }}
@@ -10,24 +12,24 @@
   </div>
 {% endmacro %}
 
-{% macro recipeSummary(recipe, show_image=false) %}
+{% macro recipeSummary(recipe) %}
     <div class="recipe-summary">
-      {% if show_image %}
+      {% if True %}
         <div class="row recipe">
           <div class="col-xs-7 recipe-detail">
             <div class="row recipe-detail-title">
-              { recipe.name }
+              <a  class="recipe-detail-title-title" href="{{ url_for('recipe_detail', recipe_name=recipe.name) }}" >{{ recipe.name }}</a>
             </div>
-            //<div class="row recipe-detail-description">
-            //  Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
-            //</div>
+            <div class="row recipe-detail-description">
+              Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
+            </div>
             <div class="row recipe-detail-time">
-              Preparation time: { recipe.c + recipe.p } minutes
+              Total time: {{ recipe.c + recipe.p }} minutes
             </div>
           </div>
-          //<div class="col-xs-5 recipe-foto">  
-          //  <img class="brandade" src="./static/assets/brandade.jpg"></img>
-          //</div>
+          <div class="col-xs-5 recipe-foto">  
+            <img class="brandade" src="/static/assets/brandade.jpg"></img>
+          </div>
 
           
         </div>
@@ -35,13 +37,13 @@
         <div class="row recipe">
           <div class="col-xs-7 recipe-detail">
             <div class="row recipe-detail-title">
-              { recipe.name }
+              {{ recipe.name }}
             </div>
-            //<div class="row recipe-detail-description">
-            //  Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
-            //</div>
+            <div class="row recipe-detail-description">
+              Emulsion of salt cod and olive oil eaten in winter with bread or potatoes.
+            </div>
             <div class="row recipe-detail-time">
-              Preparation time: { recipe.c + recipe.p } minutes
+              Total time: {{ recipe.c }} minutes
             </div>
           </div>
       {% endif %}

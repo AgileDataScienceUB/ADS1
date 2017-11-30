@@ -4,19 +4,32 @@
 	background-color: white;
 	margin: 0px !important;
 	border: 2px solid rgb(206, 206, 206);
+    margin-bottom: 24px !important;
 }
 
 .recipe-detail-title {
     font-weight: bold;
-    font-size: 35px;
+    font-size: 20px;
     color: #fd4444;
     margin-top: 10px;
     margin-left: 10px !important;
 }
 
+.recipe-detail-title a:hover {
+    color: #fd4444 !important;
+}
+
+.recipe-detail-title-title {
+    color: #fd4444;
+}
+
+.recipe-detail-title-title a:hover {
+    color: #fd4444 !important;
+}
+
 .recipe-detail-description {
     margin-left: 10px !important;
-    font-size: 20px;
+    font-size: 14px;
     color: #adabab;
 }
 
@@ -30,6 +43,7 @@
 .brandade {
     margin-top: 10px;
     max-height: 172px;
+    max-width: 100%;
 }
 .recipe-foto{
 	text-align: right;

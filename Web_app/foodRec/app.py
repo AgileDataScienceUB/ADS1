@@ -107,20 +107,28 @@ def index():
 
 @app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
-	vegan = False
-	italian = False
-	time = 120
-	ingredients = 10
-	discard = ""
+	recipes_filter = recipes
 	if request.method == 'POST':
-		a=1
+		try:
+			vegan = request.form['vegan']
+			italian = request.form['italian']
+		except:
+			vegan=False
+			italian = False
+		time = request.form['time']
+		ingredients = request.form['ingredients']
+		search = request.form['search']
+		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
 		#filter
-	return render_template('recipes/index.html', recipes=recipes, vegan=vegan, italian=italian, time=time, ingredients=ingredients, discard=discard)
+	
+	return render_template('recipes/index.html', recipes=recipes_filter.head(100))
 
 
-@app.route('/recipes/<recipe_id>/')
-def recipe_detail(recipe_id):
-	return render_template('recipes/detail.html')
+@app.route('/recipes/<recipe_name>/')
+def recipe_detail(recipe_name):
+	recipe = Recipes().getRecipe(recipe_name)
+	rating = 3.5
+	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating)
 
 @app.route('/user/<username>/')
 @login_required
