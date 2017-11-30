@@ -41,7 +41,7 @@ class Users(object):
             print(self.users)
             self.users.columns = ['username','allergies','image','name','password']
             self.collection.insert_many(pd.DataFrame.to_dict(self.users,orient='records'))
-        self.users = self.users.set_index('username')
+        #self.users = self.users.set_index('username')
     
     def getUsers(self):
         return self.users

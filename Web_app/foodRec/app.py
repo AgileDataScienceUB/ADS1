@@ -10,6 +10,7 @@ from flask_login import login_user, logout_user
 from flask_login import login_required
 
 from .forms import LoginForm
+from .forms import RegistrationForm
 from .model import User
 from .model import Users
 from .model import Recipes
@@ -24,8 +25,12 @@ import os
 
 app = Flask(__name__)
 
+app.config['MONGO_DBNAME'] = 'app'
+app.config['MONGO_URI'] = "mongodb://god:god@ds113938.mlab.com:13938/app"
 app.config['SECRET_KEY'] = 'alsfkdgasdlkgja12345378' # Create your own.
 app.config['SESSION_PROTECTION'] = 'strong'
+
+mongo = PyMongo(app)
 
 # Use Flask-Login to track current user in Flask's session.
 login_manager = LoginManager()
@@ -36,10 +41,11 @@ recipes = Recipes().getRecipes()
 
 #mongo = PyMongo(app)
 
+
 @login_manager.user_loader
 def load_user(username):
 	"""Flask-Login hook to load a User instance from ID."""
-	u = Users.getUser(username)
+	u = mongo.db.users.find_one({"username": username})
 	if not u:
   		return None	
 	return User(u['username'])
@@ -55,20 +61,21 @@ def error_not_found(error):
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
 	if current_user.is_authenticated:
-		return redirect(url_for('products_list'))
+		return redirect(url_for('recipes_list'))
 	form = LoginForm(request.form)
 	error = None
 	if request.method == 'POST' and form.validate():
 		username = form.username.data.lower().strip()
 		password = form.password.data.lower().strip()
-		user = Users().getUser(username)
-		if user and User.validate_login(user['password'], form.password.data):  
+		user = mongo.db.users.find_one({"username": form.username.data})
+		if user and User.validate_login(user['password'], form.password.data):
 			user_obj = User(user['username'])
 			login_user(user_obj)
 			return redirect(url_for('user', username=username))
 		else:
 			error = 'Incorrect username or password.'
 	return render_template('user/login.html', form=form, error=error)
+
 
 @app.route('/logout/')
 def logout():
@@ -78,13 +85,20 @@ def logout():
 @app.route('/registration/', methods=['GET', 'POST'])
 def registration():
 	if current_user.is_authenticated:
+		print("Loguejat")
 		return redirect(url_for('products_list'))
 	form = RegistrationForm(request.form)
+	print("form")
 	error = None
 	if request.method == 'POST' and form.validate():
+		print("post")
 		a = 0
+		username = form.username.data.lower().strip()
+		password = form.password.data.lower().strip()
+		user = Users().addUser(username, password,'','','')
 		#validation of registration and post to mongo
-	return render_template('user/login.html', form=form, error=error)
+
+	return render_template('user/registration.html', form=form, error=error)
 
 
 @app.route('/')
