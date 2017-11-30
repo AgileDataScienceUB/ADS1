@@ -102,3 +102,7 @@
     width: 59.1% !important;
     overflow: auto;
 }
+
+.recipes-content {
+    background-color: #ffffff;
+}

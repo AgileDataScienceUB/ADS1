@@ -32,6 +32,8 @@ login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = 'login'
 
+recipes = Recipes().getRecipes()
+
 #mongo = PyMongo(app)
 
 @login_manager.user_loader
@@ -89,10 +91,17 @@ def registration():
 def index():
   	return redirect(url_for('recipes_list'))
 
-@app.route('/recipes/')
+@app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
-	recipes = Recipes().getRecipes()
-	return render_template('recipes/index.html', recipes=recipes)
+	vegan = False
+	italian = False
+	time = 120
+	ingredients = 10
+	discard = ""
+	if request.method == 'POST':
+		a=1
+		#filter
+	return render_template('recipes/index.html', recipes=recipes, vegan=vegan, italian=italian, time=time, ingredients=ingredients, discard=discard)
 
 
 @app.route('/recipes/<recipe_id>/')
