@@ -9,11 +9,14 @@ from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user
 from flask_login import login_required
 
+from .forms import UserForm
 from .forms import LoginForm
 from .forms import RegistrationForm
 from .model import User
 from .model import Users
 from .model import Recipes
+from .model import Ratings
+from werkzeug.utils import secure_filename
 
 import json
 
@@ -23,11 +26,14 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
+UPLOAD_FOLDER = '/path/to/the/uploads'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['MONGO_DBNAME'] = 'app'
 app.config['MONGO_URI'] = "mongodb://god:god@ds113938.mlab.com:13938/app"
 app.config['SECRET_KEY'] = 'alsfkdgasdlkgja12345378' # Create your own.
 app.config['SESSION_PROTECTION'] = 'strong'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 mongo = PyMongo(app)
 
@@ -36,9 +42,9 @@ login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = 'login'
 
-recipes = Recipes().getRecipes()
-
 #mongo = PyMongo(app)
+
+
 
 
 @login_manager.user_loader
@@ -87,7 +93,6 @@ def registration():
 		print("Loguejat")
 		return redirect(url_for('products_list'))
 	form = RegistrationForm(request.form)
-	print("form")
 	error = None
 	if request.method == 'POST' and form.validate():
 		print("post")
@@ -104,35 +109,37 @@ def registration():
 def index():
   	return redirect(url_for('recipes_list'))
 
-@app.route('/recipes/', methods=['GET', 'POST'])
+@app.route('/recipes/')
 def recipes_list():
-	recipes_filter = recipes
-	if request.method == 'POST':
-		try:
-			vegan = request.form['vegan']
-			italian = request.form['italian']
-		except:
-			vegan=False
-			italian = False
-		time = request.form['time']
-		ingredients = request.form['ingredients']
-		search = request.form['search']
-		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
-		#filter
-	
-	return render_template('recipes/index.html', recipes=recipes_filter.head(100))
+	recipes = Recipes().getRecipes()
+	return render_template('recipes/index.html', recipes=recipes)
 
 
-@app.route('/recipes/<recipe_name>/')
-def recipe_detail(recipe_name):
-	recipe = Recipes().getRecipe(recipe_name)
-	rating = 3.5
-	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating)
+@app.route('/recipes/<recipe_id>/')
+def recipe_detail(recipe_id):
+	return render_template('recipes/detail.html')
 
-@app.route('/user/<username>/')
+@app.route('/user/<username>/', methods=['GET', 'POST'])
 @login_required
 def user(username):
-	return render_template('user/user.html')
+	print("Entro func")
+	form = UserForm(request.form)
+	error = None
+	if request.method == 'POST':
+		print("Entro post")
+		a = 0
+		username = form.username.data.lower().strip()
+		name = form.name.data.lower().strip()
+		allergies = form.allergies.data.lower().strip()
+		user = Users().setUser(username,name,allergies,'')
+		#validation of registration and post to mongo
+	usero = Users().getUser(username)
+	form.username=usero['username']
+	form.name=usero['name']
+	form.allergies=usero['allergies']
+
+	return render_template('user/user.html', form=form, error=error)
+
 
 # Hack to render style sheets
 app.static_folder = 'static'
@@ -149,3 +156,39 @@ def dated_url_for(endpoint, **values):
                                      endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/upload/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file', filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form action="" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    filename = 'http://127.0.0.1:5000/uploads/' + filename
+    return render_template('template.html', filename = filename)

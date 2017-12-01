@@ -1,5 +1,5 @@
 from wtforms import Form 
-from wtforms import TextAreaField, TextField, FloatField, BooleanField, SelectField
+from wtforms import TextAreaField, TextField, FloatField
 from wtforms.validators import Length, NumberRange,required
 from wtforms import PasswordField
 
@@ -20,10 +20,10 @@ class RegistrationForm(Form):
     username = TextField('Username', [required()])
     password = PasswordField('Password', [required()])
     repeatPassword = PasswordField('Repeat Password', [required()])
+
+class UserForm(Form):
+    username =  TextField('Username', [required()])
+    name =  TextField('Name', [required()])
+    allergies =  TextField('Allergies', [required()])
+
 	
-class FilterForm(Form):
-    vegan = BooleanField('Vegan')
-    italian = BooleanField('Italian')
-    time = SelectField('Time of preparation')
-    ingredients = SelectField('Number of ingredients')
-    discard = TextField('Discard ingredients')
