@@ -47,7 +47,26 @@ class Users(object):
         return self.users
     
     def getUser(self, username):
-        return self.users[self.users['username']==username]
+        try:
+            conn=pymongo.MongoClient("mongodb://god:god@ds113938.mlab.com:13938/app")
+            print ("Connected successfully!!!")
+        except pymongo.errors.ConnectionFailure:
+            print ("Could not connect to MongoDB: %s" % e )
+        db = conn['app']
+        return db.users.find_one({'username':username})
+
+    def setUser(self, username, name, allergies, image):
+        try:
+            conn=pymongo.MongoClient("mongodb://god:god@ds113938.mlab.com:13938/app")
+            print ("Connected successfully!!!")
+        except pymongo.errors.ConnectionFailure:
+            print ("Could not connect to MongoDB: %s" % e )
+        db = conn['app']
+        print(allergies)
+        db.users.update_one({'username':username},{'$set':{'allergies': allergies, 'image': image, 'name': name, 'username':username}})
+        obj = db.users.find_one({'username':username})
+        print(obj)
+        return True
     
     def addUser(self, username, password, name = '', image = '', allergies = ''):
         if(username in self.users.username.unique()): return False

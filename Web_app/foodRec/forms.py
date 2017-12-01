@@ -20,4 +20,9 @@ class RegistrationForm(Form):
   	username = TextField('Username', [required()])
   	password = PasswordField('Password', [required()])
   	repeatPassword = PasswordField('Repeat Password', [required()])
+
+class UserForm(Form):
+    username =  TextField('Username', [required()])
+    name =  TextField('Name', [required()])
+    allergies =  TextField('Allergies', [required()])
 	

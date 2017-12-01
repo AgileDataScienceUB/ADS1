@@ -1,1 +1,53 @@
-user page
+<link rel="stylesheet" href="/static/user/user.css" type="text/css">
+{% extends 'base.html' %}
+{% block main %}
+
+<form action="/user/{{ current_user.username }}/" method="POST">
+	<div class="user">
+		<div class="user-screen">
+			<div class="app-title">
+				<h1>{{ current_user.username }} profile</h1>
+			</div>
+ 			<br>
+			<div class="user-form">
+				{% if error %}<p class="alert alert-error">{{ error }}</p>{% endif %}
+				<div class="row">
+					<div class="col-md-6">
+						<div class="control-group row">
+							<label class="col-md-4">Username</label>
+							<input type="text" class="col-md-8 user-field" value="{% if current_user.username %} {{ current_user.username }} {% endif %}"  name="username">
+							<label class="user-field-icon fui-user" for="user-name"></label>
+						</div>
+						
+		 
+						<div class="control-group row">
+							<label class="col-md-4">Name</label>
+							<input type="text" class="col-md-8 user-field" value="{% if form.name %} {{ form.name }} {% endif %}"  name="name">
+							<label class="user-field-icon fui-user" for="user-name"></label>
+						</div>
+
+						<div class="control-group row">
+							<label class="col-md-4">Allergies</label>
+							<input type="text" class="col-md-8 user-field" value="{% if form.allergies %} {{ form.allergies }} {% endif %}"  name="allergies">
+							<label class="user-field-icon fui-user" for="user-name"></label>
+
+						</div>
+
+	            	</div>
+	            	<img class="col-md-5" style="float: inherit; max-height: 200px; width: auto; padding-bottom: 10px;" src="/static/assets/jen.jpg">
+	            	<br>
+	            </div>
+
+ 				<div class="row" style="padding-right: 10px;">	            	
+ 					<a class="link-log" href="">Do you want to change your password?</a>
+ 					<input value="Cancel" class="btn btn-cancel btn-large col-md-1" style="float: right;">
+	                <input type="submit" value="Save" class="btn btn-save btn-large col-md-1" style="float: right;">
+	                
+            	</div>
+			    <br>
+			</div>
+		</div>
+	</div>
+</form>
+
+{% endblock %}
