@@ -15,7 +15,6 @@ from .forms import RegistrationForm
 from .model import User
 from .model import Users
 from .model import Recipes
-from .model import Ratings
 from werkzeug.utils import secure_filename
 
 import json
@@ -41,6 +40,8 @@ mongo = PyMongo(app)
 login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = 'login'
+
+recipes = Recipes().getRecipes()
 
 #mongo = PyMongo(app)
 
@@ -109,15 +110,30 @@ def registration():
 def index():
   	return redirect(url_for('recipes_list'))
 
-@app.route('/recipes/')
+@app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
-	recipes = Recipes().getRecipes()
-	return render_template('recipes/index.html', recipes=recipes)
+	recipes_filter = recipes
+	if request.method == 'POST':
+		try:
+			vegan = request.form['vegan']
+			italian = request.form['italian']
+		except:
+			vegan=False
+			italian = False
+		time = request.form['time']
+		ingredients = request.form['ingredients']
+		search = request.form['search']
+		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
+		#filter
+	
+	return render_template('recipes/index.html', recipes=recipes_filter.head(100))
 
 
-@app.route('/recipes/<recipe_id>/')
-def recipe_detail(recipe_id):
-	return render_template('recipes/detail.html')
+@app.route('/recipes/<recipe_name>/')
+def recipe_detail(recipe_name):
+	recipe = Recipes().getRecipe(recipe_name)
+	rating = 3.5
+	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating)
 
 @app.route('/user/<username>/', methods=['GET', 'POST'])
 @login_required
