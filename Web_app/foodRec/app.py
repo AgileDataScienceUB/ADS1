@@ -125,7 +125,8 @@ def recipes_list():
 		search = request.form['search']
 		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
 		#filter
-	
+		#recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user)
+
 	return render_template('recipes/index.html', recipes=recipes_filter.head(100))
 
 
@@ -138,11 +139,9 @@ def recipe_detail(recipe_name):
 @app.route('/user/<username>/', methods=['GET', 'POST'])
 @login_required
 def user(username):
-	print("Entro func")
 	form = UserForm(request.form)
 	error = None
 	if request.method == 'POST':
-		print("Entro post")
 		a = 0
 		username = form.username.data.lower().strip()
 		name = form.name.data.lower().strip()
