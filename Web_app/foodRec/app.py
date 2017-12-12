@@ -133,8 +133,9 @@ def recipes_list():
 @app.route('/recipes/<recipe_name>/')
 def recipe_detail(recipe_name):
 	recipe = Recipes().getRecipe(recipe_name)
+	img, method, description = Recipes().getFullRecipe(recipe_name)
 	rating = 3.5
-	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating)
+	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating, img=img, method=method, description=description)
 
 @app.route('/user/<username>/', methods=['GET', 'POST'])
 @login_required

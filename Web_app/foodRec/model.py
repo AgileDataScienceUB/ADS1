@@ -1,5 +1,7 @@
 import pymongo
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 
 class User():
 
@@ -107,6 +109,11 @@ class Recipes(object):
         for d in self.collection.find():
             self.recipes = self.recipes.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
         self.recipes = self.recipes.set_index('name')
+        #for index, row in self.recipes.iterrows():
+        #    img, description = self.getSummaryRecipe(row.name)
+        #    row['img'] = img
+        #    row['description'] = description
+        #    self.recipes[index] = row
         return self.recipes
     
     def getRecipe(self, name):
@@ -121,6 +128,58 @@ class Recipes(object):
             print('Recipe not found')
             return False
         return self.recipes.loc[name]
+
+    def BBCurl(self, url):
+        base = "https://www.bbc.co.uk/food/recipes/"
+        url = url.split("recipes_")[1]
+        url = url.split(".")[0]
+        return base+url
+
+    def readSourceBBC(self, url, im = False, method = False):
+        r = requests.get(self.BBCurl(url))
+        soup = BeautifulSoup(r.content, "lxml")
+        if (im):
+            img = soup.find('img', itemprop='image')
+            img = img.attrs['src']
+        else:
+            img = None
+
+        description = soup.find('p', {"class" : "recipe-description__text"})
+        description = description.text
+
+        if(method):
+            methodAux = soup.find_all('p', {"class" : "recipe-method__list-item-text"})
+            method = []
+            for m in methodAux:
+                method.append(m.text)
+            return img, method, description
+         
+        return img, description
+
+    def getFullRecipe(self,name):
+        recipe = self.getRecipe(name)
+        #link = recipe['link']
+        #im = False
+        #if recipe['i'] == 1:
+        #    im = True
+        im = True
+        link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
+        img, method, description = self.readSourceBBC(link, im, True)
+        return img, method, description
+
+    def getSummaryRecipe(self,name):
+        recipe = self.getRecipe(name)
+        #link = recipe['link']
+        #im = False
+        #if recipe['i'] == 1:
+        #    im = True
+        im = True
+        link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
+        url = self.BBCurl(link)
+        img, description = self.readSourceBBC(link, im, False)
+        return img, description
+
+
     
     # TODO: Filter by excluded ingredients
     # TODO: Filter by average rating
@@ -179,6 +238,7 @@ class Ratings(object):
         self.collection.update_one({'username':username},{"$set":{recipe:rating}})
         self.ratings.at[username,recipe] = rating
         return True
+
 
 
     
