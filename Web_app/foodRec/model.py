@@ -140,6 +140,13 @@ class Recipes(object):
         self.filtered = self.filtered.set_index('name')
         return self.filtered
 
+    def getRecipesRecommender(recipes_filter,current_user):
+
+        self.recommend #aquí va la funció del recommender
+
+        return self.recommend
+
+
 class Ratings(object):
     def __init__(self, filename=None):
         try:
