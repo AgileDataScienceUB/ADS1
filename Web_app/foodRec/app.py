@@ -150,9 +150,14 @@ def user(username):
 		user = Users().setUser(username,name,allergies,'')
 		#validation of registration and post to mongo
 	usero = Users().getUser(username)
-	form.username=usero['username']
-	form.name=usero['name']
-	form.allergies=usero['allergies']
+	if(usero.empty):
+		error = "User not found"
+		return error, 404
+	else:
+		form.username=usero['username']
+		form.name=usero['name']
+		form.allergies=usero['allergies']
+	
 
 	return render_template('user/user.html', form=form, error=error)
 
