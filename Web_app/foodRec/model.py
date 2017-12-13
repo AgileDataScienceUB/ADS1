@@ -1,5 +1,7 @@
 import pymongo
 import pandas as pd
+#import numpy as np
+#import recolib as rlib
 
 class User():
 
@@ -140,10 +142,20 @@ class Recipes(object):
         self.filtered = self.filtered.set_index('name')
         return self.filtered
 
-    def getRecipesRecommender(recipes_filter,current_user):
-
-        self.recommend #aquí va la funció del recommender
-
+    def getRecipesRecommender(self,recipes_filter,current_user):
+    #def getRecipesRecommender(self,current_user):
+        #aquí va la funció del recommender
+        # test if is the same to use a newdeclared variable or self.filtered
+        filtered_recipes = filtered_recipes.sample(frac=0.1)
+        #self.filtered = self.filtered.sample(frac=0.1)
+        self.recommend = pd.DataFrame(index = filtered_recipes.index) 
+        self.recommend["rating"] = np.zeros(filtered_recipes.shape[0])
+        for recip in filtered_recipes.index:
+            if(recip in a.columns):
+            #print("Hi!")
+            rate = rlib.predusrecalter2(current_user, recip, a, db_recipes_ingredients, mode=1)
+            self.recommend.loc[recip,"rating"] = rate 
+        self.recommend = self.recommend.sort_values("rating",ascending = False )
         return self.recommend
 
 

@@ -43,6 +43,9 @@ login_manager.login_view = 'login'
 
 recipes = Recipes().getRecipes()
 
+# a = needs a method to obtain all ratings of all users
+# one_hot_ingredient = needs a method to obtain this dataframe
+
 #mongo = PyMongo(app)
 
 
