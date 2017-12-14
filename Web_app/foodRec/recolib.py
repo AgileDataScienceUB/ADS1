@@ -21,14 +21,17 @@ def userSim(u1,u2,a):
         if s1[i] != 0.0 and s2[i] != 0.0:
             cont += 1
             dif += 4 - np.abs(s1[i] - s2[i])
-    return dif/cont/2 - 1
+    if cont > 0:
+        return dif/cont/2 - 1
+    else:
+        return 0
 
 
 def predUsrRec(u,r,a): 
     #print("------------------------------------------")
     #print("Current recipe rate :",a.loc[u,r]," user :",u,"recipe :",r)
     #print("------------------------------------------")
-    if (a.loc[u,r] != 0.0):
+    if (a.loc[u,r] > 0.9):
         return a.loc[u,r]
     else:
         tot = 0
@@ -40,7 +43,7 @@ def predUsrRec(u,r,a):
                 tot += (sr[i]-3) * c
                 simCoef += c
         if simCoef > 0.0:
-            return tot/simCoef + 3
+            return np.round(tot/simCoef, decimals = 2) + 3
         return 3
     
 def distance_recipes(recipe1,recipe2,db_recipes_ingredients):

@@ -39,7 +39,7 @@
 		</div>
 		<div class="col-xs-9 recipes-recipe">
 			{% for index, recipe in recipes.iterrows() %}
-				{{ recipeSummary(recipe, rating) }}
+				{{ recipeSummary(recipe, rating, pred_rating[index]) }}
 			{% else %}
 				<div class="recipe-summary">
 		        </div>

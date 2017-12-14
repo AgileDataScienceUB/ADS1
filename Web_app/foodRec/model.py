@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import numpy as np
-from . import recolib 
+from . import recolib # comment if used ofline
 
 class User():
 
@@ -133,6 +133,7 @@ class Recipes(object):
             for d in self.collection.find({"name":name}):
                 self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
             self.recipe = self.recipe.set_index('name')
+
             if self.recipe.empty: print('Recipe not found')
             return self.recipe
         if not self.recipes.index.str.contains(name).any(): 
@@ -181,7 +182,7 @@ class Recipes(object):
     
     # TODO: Filter by excluded ingredients
     # TODO: Filter by average rating
-    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6, avgpoints=0):
+    def getFilteredRecipes(self, name=' ', maxtime=1e6, maxing=1e6, avgpoints=0):
         # I don't know how to pandas
         '''
         if not self.recipes.empty:
@@ -201,21 +202,24 @@ class Recipes(object):
     #def getRecipesRecommender(self,current_user):
         #aquí va la funció del recommender
         # test if is the same to use a newdeclared variable or self.filtered
-        filtered_recipes = filtered_recipes.sample(frac=0.25)
+        #filtered_recipes = filtered_recipes.sample(frac=0.25)
         #self.filtered = self.filtered.sample(frac=0.1)
-        self.recommend = pd.DataFrame(index = filtered_recipes.index) 
-        self.recommend["pred_rating"] = np.zeros(filtered_recipes.shape[0])
+        recommend = pd.Series(np.zeros(filtered_recipes.shape[0]), index = filtered_recipes.index)
         for recip in filtered_recipes.index:
             if(recip in a.columns):
             #print("Hi!")
                 # rate = rlib.predusrecalter2(current_user, recip, a, db_recipes_ingredients, mode = 1)
                 rate = recolib.predUsrRec(current_user,recip,a)
-                self.recommend.loc[recip,"pred_rating"] = rate 
+                recommend[recip] = rate
+            else:
+                recommend[recip] = 2.5
         #self.recommend = self.recommend.sort_values("rating",ascending = False )
-        filtered_recipes = filtered_recipes.join(self.recommend)
+        filtered_recipes['pred_rating'] = recommend
+        #filtered_recipes = filtered_recipes.join(self.recommend)
         filtered_recipes = filtered_recipes.sort_values("pred_rating",ascending = False)
-        #filtered_recipes.drop('rating', axis=1, inplace=True)
-        return filtered_recipes
+        print(filtered_recipes.columns)
+        # filtered_recipes.drop('pred_rating', axis=1, inplace=True)
+        return filtered_recipes,recommend#pred_rating
 
 
 class Ratings(object):
