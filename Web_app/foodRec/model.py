@@ -83,6 +83,15 @@ class Users(object):
         self.users = self.users[self.users['username'] != username]
         return True
 
+    def addRating(self, username, recipe, rating):
+        if(self.getUser(username) == ""): 
+            return False
+        self.collection.update_one({'username':username},{"$set":{recipe:rating}})
+        if not self.users.empty:
+            self.users[username,recipe]=rating
+        print('Rating added')
+        return True
+
 
 class Recipes(object):
     def __init__(self, filename=None):
@@ -144,8 +153,7 @@ class Recipes(object):
         else:
             img = None
 
-        description = soup.find('p', {"class" : "recipe-description__text"})
-        description = description.text
+        description = soup.find('p', {"class" : "recipe-description__text"}).text
 
         if(method):
             methodAux = soup.find_all('p', {"class" : "recipe-method__list-item-text"})
@@ -166,18 +174,6 @@ class Recipes(object):
         link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
         img, method, description = self.readSourceBBC(link, im, True)
         return img, method, description
-
-    def getSummaryRecipe(self,name):
-        recipe = self.getRecipe(name)
-        #link = recipe['link']
-        #im = False
-        #if recipe['i'] == 1:
-        #    im = True
-        im = True
-        link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
-        url = self.BBCurl(link)
-        img, description = self.readSourceBBC(link, im, False)
-        return img, description
 
 
     
