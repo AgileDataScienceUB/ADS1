@@ -26,9 +26,8 @@ def userSim(u1,u2,a):
 
 def predUsrRec(u,r,a): 
     #print("------------------------------------------")
-    #print("rate :",a.loc[u,r]," user :",u,"recipe :",r)
+    #print("Current recipe rate :",a.loc[u,r]," user :",u,"recipe :",r)
     #print("------------------------------------------")
-    #if (a[r][u] != 0.0):
     if (a.loc[u,r] != 0.0):
         return a.loc[u,r]
     else:
