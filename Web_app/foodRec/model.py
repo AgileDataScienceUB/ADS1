@@ -149,7 +149,10 @@ class Recipes(object):
         else:
             img = None
 
-        description = soup.find('p', {"class" : "recipe-description__text"}).text
+        try:
+            description = soup.find('p', {"class" : "recipe-description__text"}).text
+        except:
+            description = ""
 
         if(method):
             methodAux = soup.find_all('p', {"class" : "recipe-method__list-item-text"})

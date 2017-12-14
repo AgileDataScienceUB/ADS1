@@ -23,6 +23,7 @@ import json
 import bson
 import pandas as pd
 import numpy as np
+import random
 
 import os
 
@@ -137,7 +138,7 @@ def recipes_list():
 		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients,0)
 		#filter
 		#recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user)
-	rating = 3
+	rating = random.randint(1,5)
 	return render_template('recipes/index.html', recipes=recipes_filter.head(100), rating=rating)
 
 
