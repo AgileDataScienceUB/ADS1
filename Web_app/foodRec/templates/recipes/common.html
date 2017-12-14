@@ -12,7 +12,7 @@
   </div>
 {% endmacro %}
 
-{% macro recipeSummary(recipe, rating) %}
+{% macro recipeSummary(recipe, rating, pred_rating) %}
     <div class="recipe-summary">
         <div class="row recipe">
           <div class="row">
@@ -57,11 +57,18 @@
             <div class="col-xs-6">Serves: {{ recipe.s }}</div>
           </div>
           <div class="row recipe-detail-time">
-            <div class="col-xs-6" style="margin-bottom:15px">
+            <div class="col-xs-4" style="margin-bottom:15px">
               {% if recipe.v == 1 %}
                 Dietary: Vegan
               {% else %}
                 Dietary: None
+              {% endif %}
+            </div>
+            <div class="col-xs-6" >
+              {% if recipe.pred_rating > 0 %}
+                Our prediction for you: {{recipe.pred_rating}}/5
+              {% else %}
+                We don't yet have a prediction for you
               {% endif %}
             </div>
           </div>

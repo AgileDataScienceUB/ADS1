@@ -6,3 +6,5 @@ Flask-PyMongo
 gunicorn
 Pandas
 bs4
+numpy
+requests

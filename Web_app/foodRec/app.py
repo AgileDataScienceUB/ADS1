@@ -15,7 +15,7 @@ from forms import RegistrationForm
 from model import User
 from model import Users
 from model import Recipes
-
+from model import Ratings
 from werkzeug.utils import secure_filename
 
 import json
@@ -23,6 +23,7 @@ import json
 import bson
 import pandas as pd
 import numpy as np
+from . import recolib 
 
 import os
 
@@ -46,6 +47,15 @@ login_manager.login_view = 'login'
 recipes = Recipes().getRecipes()
 recipes['img'] = np.nan
 recipes['description'] = np.nan
+recipes['pred_rating'] = np.zeros(len(recipes.index))
+
+# It take a lot
+a= Users().getUsers()
+a = a.set_index("username")
+a = a.drop(["_id","allergies","image","name","password"], axis = 1)
+a.fillna(0, inplace=True)
+#a = Ratings().getRatings()
+#a = a[~a.index.duplicated(keep='first')]
 
 #mongo = PyMongo(app)
 
@@ -124,6 +134,8 @@ def rateRecipe():
 @app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
 	recipes_filter = recipes
+	recipes_ordered = recipes
+	pred_rating = []
 	if request.method == 'POST':
 		try:
 			vegan = request.form['vegan']
@@ -134,12 +146,16 @@ def recipes_list():
 		time = request.form['time']
 		ingredients = request.form['ingredients']
 		search = request.form['search']
-		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients,0)
-		#filter
-		#recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user)
-	rating = 3
-	return render_template('recipes/index.html', recipes=recipes_filter.head(100), rating=rating)
 
+		if (len(search) == 0):
+			search = 'pizza'
+		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
+		#filter
+		recipes_ordered,pred_rating = Recipes().getRecipesRecommender(recipes_filter,current_user.username,a)
+
+	rating = 3
+	#return render_template('recipes/index.html', recipes=recipes_filter.head(100), rating=rating)
+	return render_template('recipes/index.html', recipes=recipes_ordered, rating=rating, pred_rating=pred_rating)
 
 @app.route('/recipes/<recipe_name>/')
 def recipe_detail(recipe_name):
