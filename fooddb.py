@@ -47,14 +47,7 @@ class Recipes(object):
     # TODO: Filter by average rating
     def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6, avgpoints=0):
         # I don't know how to pandas
-        '''
-        if not self.recipes.empty:
-            self.aux = self.recipes
-            self.aux['recipename'] = self.aux.index
-            self.aux = self.aux[[i<=maxing for i in [len(self.aux['l'][i]) for i in range(len(self.aux['l']))]]][self.aux['recipename'].str.contains(name)][self.aux['c']+self.aux['p']<=maxtime]
-            del self.aux['recipename']
-            return self.aux
-        '''
+        
         self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
         for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
             self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
@@ -99,7 +92,7 @@ class Recipes(object):
     
     def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6,avgpoints=0):
         self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
-        for d in self.collection.find({"c":{"$lte":maxtime},"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.I.length<='+str(naxing)}):
+        for d in self.collection.find({"c":{"$lte":maxtime},"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
             self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
         self.filtered = self.filtered.set_index('name')
         return self.filtered
