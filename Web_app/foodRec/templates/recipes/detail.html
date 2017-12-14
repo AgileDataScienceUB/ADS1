@@ -69,9 +69,15 @@
 			</div>
 		</div>
 		<div class="row detail-row-image">
+			{% if img!=None %}
 			<div class="col-xs-5 detail-image">
 				<img class="brandade" src="{{ img }}"></img>
 			</div>
+			{% else %}
+			<div class="col-xs-5 detail-image">
+				<img class="brandade" src="{{url_for('static', filename='./assets/default.jpg')}}"></img>
+			</div>
+			{% endif %}
 			<div class="col-xs-7 detail-summary">
 				<div class="row detail-description">
 					{{ description }}

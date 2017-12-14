@@ -101,13 +101,13 @@ class Recipes(object):
         except pymongo.errors.ConnectionFailure:
             print ("Could not connect to MongoDB: %s" % e )
         db = conn['app']
-        self.collection = db.recipes
+        self.collection = db.recipes2
         if filename==None:
-            self.recipes = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
+            self.recipes = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
         else:
             self.recipes = pd.read_json(path_or_buf=filename).T
             self.recipes = self.recipes.reset_index()
-            self.recipes.columns = ['name','c','i','l','p','s','v']
+            self.recipes.columns = ['name','c','i','l','p','s','url','v']
             self.recipes['name'] = self.recipes['name'].str.replace('.','')
             self.collection.insert_many(pd.DataFrame.to_dict(self.recipes,orient='records'))
             self.recipe = self.recipe.set_index('name')
@@ -118,25 +118,21 @@ class Recipes(object):
         for d in self.collection.find():
             self.recipes = self.recipes.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
         self.recipes = self.recipes.set_index('name')
-        #for index, row in self.recipes.iterrows():
-        #    img, description = self.getSummaryRecipe(row.name)
-        #    row['img'] = img
-        #    row['description'] = description
-        #    self.recipes[index] = row
         return self.recipes
     
     def getRecipe(self, name):
-        if self.recipes.empty:
-            self.recipe = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-            for d in self.collection.find({"name":name}):
-                self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-            self.recipe = self.recipe.set_index('name')
-            if self.recipe.empty: print('Recipe not found')
-            return self.recipe
-        if not self.recipes.index.str.contains(name).any(): 
-            print('Recipe not found')
-            return False
-        return self.recipes.loc[name]
+        self.recipe = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
+        for d in self.collection.find({"name":name}):
+            self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
+        self.recipe = self.recipe.set_index('name')
+        return self.recipe
+    
+    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6,avgpoints=0):
+        self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
+        for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
+            self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
+        self.filtered = self.filtered.set_index('name')
+        return self.filtered
 
     def BBCurl(self, url):
         base = "https://www.bbc.co.uk/food/recipes/"
@@ -170,30 +166,10 @@ class Recipes(object):
         #im = False
         #if recipe['i'] == 1:
         #    im = True
-        im = True
-        link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
+        im = recipe.i.values[0]
+        link = recipe.url.values[0]
         img, method, description = self.readSourceBBC(link, im, True)
         return img, method, description
-
-
-    
-    # TODO: Filter by excluded ingredients
-    # TODO: Filter by average rating
-    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6, avgpoints=0):
-        # I don't know how to pandas
-        '''
-        if not self.recipes.empty:
-            self.aux = self.recipes
-            self.aux['recipename'] = self.aux.index
-            self.aux = self.aux[[i<=maxing for i in [len(self.aux['l'][i]) for i in range(len(self.aux['l']))]]][self.aux['recipename'].str.contains(name)][self.aux['c']+self.aux['p']<=maxtime]
-            del self.aux['recipename']
-            return self.aux
-        '''
-        self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-        for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
-            self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-        self.filtered = self.filtered.set_index('name')
-        return self.filtered
 
     def getRecipesRecommender(recipes_filter,current_user):
 

@@ -134,10 +134,9 @@ def recipes_list():
 		time = request.form['time']
 		ingredients = request.form['ingredients']
 		search = request.form['search']
-		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
+		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients,0)
 		#filter
 		#recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user)
-
 	rating = 3
 	return render_template('recipes/index.html', recipes=recipes_filter.head(100), rating=rating)
 
