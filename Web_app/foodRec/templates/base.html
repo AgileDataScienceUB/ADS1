@@ -17,6 +17,9 @@
       {# Add page-load JavaScript here. #}
     });
   </script>
+  <script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
   {% block extra_head %}{% endblock extra_head %}
 </head>
 <body>

@@ -15,12 +15,15 @@ from .forms import RegistrationForm
 from .model import User
 from .model import Users
 from .model import Recipes
+from .model import Ratings
 from werkzeug.utils import secure_filename
 
 import json
 
 import bson
 import pandas as pd
+import numpy as np
+from . import recolib 
 
 import os
 
@@ -42,9 +45,12 @@ login_manager.setup_app(app)
 login_manager.login_view = 'login'
 
 recipes = Recipes().getRecipes()
+recipes['img'] = np.nan
+recipes['description'] = np.nan
 
-# a = needs a method to obtain all ratings of all users
-# one_hot_ingredient = needs a method to obtain this dataframe
+# It take a lot
+a = Ratings().getRatings()
+a = a[~a.index.duplicated(keep='first')]
 
 #mongo = PyMongo(app)
 
@@ -113,6 +119,13 @@ def registration():
 def index():
   	return redirect(url_for('recipes_list'))
 
+@app.route('/rateRecipe', methods=['POST'])
+def rateRecipe():
+	rating = request.form['rating']
+	name = request.form['name']
+	Users().addRating(current_user.get_id(),name,rating)
+	return json.dumps({'status':'OK'});
+
 @app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
 	recipes_filter = recipes
@@ -128,16 +141,19 @@ def recipes_list():
 		search = request.form['search']
 		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
 		#filter
-		#recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user)
+		recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user.username,a)
 
-	return render_template('recipes/index.html', recipes=recipes_filter.head(100))
-
+	rating = 3
+	#return render_template('recipes/index.html', recipes=recipes_filter.head(100), rating=rating)
+	return render_template('recipes/index.html', recipes=recipes_ordered)
 
 @app.route('/recipes/<recipe_name>/')
 def recipe_detail(recipe_name):
+	username = current_user.get_id()
 	recipe = Recipes().getRecipe(recipe_name)
-	rating = 3.5
-	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating)
+	img, method, description = Recipes().getFullRecipe(recipe_name)
+	rating = 3
+	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating, img=img, method=method, description=description, username=username)
 
 @app.route('/user/<username>/', methods=['GET', 'POST'])
 @login_required
@@ -152,9 +168,16 @@ def user(username):
 		user = Users().setUser(username,name,allergies,'')
 		#validation of registration and post to mongo
 	usero = Users().getUser(username)
-	form.username=usero['username']
-	form.name=usero['name']
-	form.allergies=usero['allergies']
+	print(usero)
+	print(usero['username'])
+	if(usero['username'] == ""):
+		error = "User not found"
+		return error, 404
+	else:
+		form.username=usero['username']
+		form.name=usero['name']
+		form.allergies=usero['allergies']
+	
 
 	return render_template('user/user.html', form=form, error=error)
 

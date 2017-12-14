@@ -1,7 +1,9 @@
 import pymongo
 import pandas as pd
-#import numpy as np
-#import recolib as rlib
+import requests
+from bs4 import BeautifulSoup
+import numpy as np
+from . import recolib 
 
 class User():
 
@@ -83,6 +85,15 @@ class Users(object):
         self.users = self.users[self.users['username'] != username]
         return True
 
+    def addRating(self, username, recipe, rating):
+        if(self.getUser(username) == ""): 
+            return False
+        self.collection.update_one({'username':username},{"$set":{recipe:rating}})
+        if not self.users.empty:
+            self.users[username,recipe]=rating
+        print('Rating added')
+        return True
+
 
 class Recipes(object):
     def __init__(self, filename=None):
@@ -109,6 +120,11 @@ class Recipes(object):
         for d in self.collection.find():
             self.recipes = self.recipes.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
         self.recipes = self.recipes.set_index('name')
+        #for index, row in self.recipes.iterrows():
+        #    img, description = self.getSummaryRecipe(row.name)
+        #    row['img'] = img
+        #    row['description'] = description
+        #    self.recipes[index] = row
         return self.recipes
     
     def getRecipe(self, name):
@@ -123,6 +139,45 @@ class Recipes(object):
             print('Recipe not found')
             return False
         return self.recipes.loc[name]
+
+    def BBCurl(self, url):
+        base = "https://www.bbc.co.uk/food/recipes/"
+        url = url.split("recipes_")[1]
+        url = url.split(".")[0]
+        return base+url
+
+    def readSourceBBC(self, url, im = False, method = False):
+        r = requests.get(self.BBCurl(url))
+        soup = BeautifulSoup(r.content, "lxml")
+        if (im):
+            img = soup.find('img', itemprop='image')
+            img = img.attrs['src']
+        else:
+            img = None
+
+        description = soup.find('p', {"class" : "recipe-description__text"}).text
+
+        if(method):
+            methodAux = soup.find_all('p', {"class" : "recipe-method__list-item-text"})
+            method = []
+            for m in methodAux:
+                method.append(m.text)
+            return img, method, description
+         
+        return img, description
+
+    def getFullRecipe(self,name):
+        recipe = self.getRecipe(name)
+        #link = recipe['link']
+        #im = False
+        #if recipe['i'] == 1:
+        #    im = True
+        im = True
+        link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
+        img, method, description = self.readSourceBBC(link, im, True)
+        return img, method, description
+
+
     
     # TODO: Filter by excluded ingredients
     # TODO: Filter by average rating
@@ -142,21 +197,25 @@ class Recipes(object):
         self.filtered = self.filtered.set_index('name')
         return self.filtered
 
-    def getRecipesRecommender(self,recipes_filter,current_user):
+    def getRecipesRecommender(self, filtered_recipes, current_user,a):
     #def getRecipesRecommender(self,current_user):
         #aquí va la funció del recommender
         # test if is the same to use a newdeclared variable or self.filtered
-        filtered_recipes = filtered_recipes.sample(frac=0.1)
+        filtered_recipes = filtered_recipes.sample(frac=0.25)
         #self.filtered = self.filtered.sample(frac=0.1)
         self.recommend = pd.DataFrame(index = filtered_recipes.index) 
-        self.recommend["rating"] = np.zeros(filtered_recipes.shape[0])
+        self.recommend["pred_rating"] = np.zeros(filtered_recipes.shape[0])
         for recip in filtered_recipes.index:
             if(recip in a.columns):
             #print("Hi!")
-            rate = rlib.predusrecalter2(current_user, recip, a, db_recipes_ingredients, mode=1)
-            self.recommend.loc[recip,"rating"] = rate 
-        self.recommend = self.recommend.sort_values("rating",ascending = False )
-        return self.recommend
+                # rate = rlib.predusrecalter2(current_user, recip, a, db_recipes_ingredients, mode = 1)
+                rate = recolib.predUsrRec(current_user,recip,a)
+                self.recommend.loc[recip,"pred_rating"] = rate 
+        #self.recommend = self.recommend.sort_values("rating",ascending = False )
+        filtered_recipes = filtered_recipes.join(self.recommend)
+        filtered_recipes = filtered_recipes.sort_values("pred_rating",ascending = False)
+        #filtered_recipes.drop('rating', axis=1, inplace=True)
+        return filtered_recipes
 
 
 class Ratings(object):
@@ -191,6 +250,7 @@ class Ratings(object):
         self.collection.update_one({'username':username},{"$set":{recipe:rating}})
         self.ratings.at[username,recipe] = rating
         return True
+
 
 
     

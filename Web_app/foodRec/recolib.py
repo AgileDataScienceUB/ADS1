@@ -25,8 +25,12 @@ def userSim(u1,u2,a):
 
 
 def predUsrRec(u,r,a): 
-    if a[r][u] != 0.0:
-        return a[r][u]
+    #print("------------------------------------------")
+    #print("rate :",a.loc[u,r]," user :",u,"recipe :",r)
+    #print("------------------------------------------")
+    #if (a[r][u] != 0.0):
+    if (a.loc[u,r] != 0.0):
+        return a.loc[u,r]
     else:
         tot = 0
         simCoef = 0
