@@ -5,3 +5,4 @@ WTForms
 Flask-PyMongo
 gunicorn
 Pandas
+bs4

@@ -1,5 +1,5 @@
 .recipe {
-	height: 200px;
+	//height: 150px;
 	width: 100%;
 	background-color: white;
 	margin: 0px !important;
@@ -36,7 +36,7 @@
 .recipe-detail-time {
     margin-left: 10px !important;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 14px;
     margin-top: 10px;
 }
 
@@ -47,4 +47,69 @@
 }
 .recipe-foto{
 	text-align: right;
+}
+
+.rating {
+    float:left;
+    //width:300px;
+    margin-top: 10px;
+}
+.rating span { float:right; position:relative; }
+.rating span input {
+    position:absolute;
+    top:0px;
+    left:0px;
+    opacity:0;
+}
+.rating span label {
+    display:inline-block;
+    width:25px;
+    height:25px;
+    text-align:center;
+    color:#FFF;
+    background:#ccc;
+    font-size:30px;
+    margin-right:2px;
+    line-height:30px;
+    border-radius:50%;
+    -webkit-border-radius:50%;
+}
+.rating span:hover ~ span label,
+.rating span:hover label,
+.rating span.checked label,
+.rating span.checked ~ span label {
+    background:#fd4444;
+    color:#FFF;
+}
+
+.rating-s {
+    float:left;
+    //width:300px;
+    margin-top: 10px;
+}
+.rating-s span { float:right; position:relative; }
+.rating-s span input {
+    position:absolute;
+    top:0px;
+    left:0px;
+    opacity:0;
+}
+.rating-s span label {
+    display:inline-block;
+    width:25px;
+    height:25px;
+    text-align:center;
+    color:#FFF;
+    background:#ccc;
+    font-size:30px;
+    margin-right:2px;
+    line-height:30px;
+    border-radius:50%;
+    -webkit-border-radius:50%;
+}
+
+.rating-s span.checked label,
+.rating-s span.checked ~ span label {
+    background:#fd4444;
+    color:#FFF;
 }
