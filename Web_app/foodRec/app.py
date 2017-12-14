@@ -3,18 +3,18 @@ from flask import render_template
 from flask_pymongo import PyMongo
 from flask import abort, jsonify, redirect, render_template
 from flask import request, url_for
-from .forms import ProductForm
+from forms import ProductForm
 from bson.objectid import ObjectId
 from flask_login import LoginManager, current_user
 from flask_login import login_user, logout_user
 from flask_login import login_required
 
-from .forms import UserForm
-from .forms import LoginForm
-from .forms import RegistrationForm
-from .model import User
-from .model import Users
-from .model import Recipes
+from forms import UserForm
+from forms import LoginForm
+from forms import RegistrationForm
+from model import User
+from model import Users
+from model import Recipes
 from werkzeug.utils import secure_filename
 
 import json
@@ -207,3 +207,8 @@ def upload_file():
 def uploaded_file(filename):
     filename = 'http://127.0.0.1:5000/uploads/' + filename
     return render_template('template.html', filename = filename)
+
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

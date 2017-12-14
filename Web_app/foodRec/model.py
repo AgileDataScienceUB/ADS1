@@ -86,7 +86,7 @@ class Recipes(object):
     def __init__(self, filename=None):
         try:
             conn=pymongo.MongoClient("mongodb://god:god@ds113938.mlab.com:13938/app")
-            print ("Connected successfully!!!")
+            print ("Connected successfully recipes!!!")
         except pymongo.errors.ConnectionFailure:
             print ("Could not connect to MongoDB: %s" % e )
         db = conn['app']
@@ -142,9 +142,9 @@ class Recipes(object):
 
     def getRecipesRecommender(recipes_filter,current_user):
 
-        self.recommend #aquí va la funció del recommender
+        #self.recommend aqui va la funcio del recommender
 
-        return self.recommend
+        return self.recipes_filter
 
 
 class Ratings(object):
