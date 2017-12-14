@@ -44,7 +44,8 @@ login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = 'login'
 
-recipes = Recipes().getRecipes()
+recipeClass = Recipes()
+recipes = recipeClass.getRecipes()
 recipes['img'] = np.nan
 recipes['description'] = np.nan
 
@@ -80,6 +81,9 @@ def login():
 		password = form.password.data.lower().strip()
 		user = mongo.db.users.find_one({"username": form.username.data})
 		if user and User.validate_login(user['password'], form.password.data):
+			allergiesAux = user['allergies']
+			allergies = allergiesAux.split(',')
+			recipes = recipeClass.getFilteredRecipes("", 1e6, 1e6, 0, allergies)
 			user_obj = User(user['username'])
 			login_user(user_obj)
 			return redirect(url_for('user', username=username))
@@ -124,18 +128,18 @@ def rateRecipe():
 
 @app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
+	username = current_user.get_id()
 	recipes_filter = recipes
+	allergies = []
+	if username != None:
+		user = Users().getUser(username)
+		allergiesAux = user['allergies']
+		allergies = allergiesAux.split(',')
 	if request.method == 'POST':
-		try:
-			vegan = request.form['vegan']
-			italian = request.form['italian']
-		except:
-			vegan=False
-			italian = False
 		time = request.form['time']
 		ingredients = request.form['ingredients']
 		search = request.form['search']
-		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients,0)
+		recipes_filter = recipeClass.getFilteredRecipes(search, time, ingredients,0, allergies)
 		#filter
 		#recipes_ordered = Recipes().getRecipesRecommender(recipes_filter,current_user)
 	rating = random.randint(1,5)
@@ -145,8 +149,8 @@ def recipes_list():
 @app.route('/recipes/<recipe_name>/')
 def recipe_detail(recipe_name):
 	username = current_user.get_id()
-	recipe = Recipes().getRecipe(recipe_name)
-	img, method, description = Recipes().getFullRecipe(recipe_name)
+	recipe = recipeClass.getRecipe(recipe_name)
+	img, method, description = recipeClass.getFullRecipe(recipe_name)
 	rating = 3
 	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating, img=img, method=method, description=description, username=username)
 
@@ -163,8 +167,6 @@ def user(username):
 		user = Users().setUser(username,name,allergies,'')
 		#validation of registration and post to mongo
 	usero = Users().getUser(username)
-	print(usero)
-	print(usero['username'])
 	if(usero['username'] == ""):
 		error = "User not found"
 		return error, 404
