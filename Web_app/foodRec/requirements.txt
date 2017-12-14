@@ -4,3 +4,4 @@ Flask-Script
 WTForms
 Flask-PyMongo
 gunicorn
+Pandas
