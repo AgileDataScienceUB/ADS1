@@ -1,61 +1,6 @@
 import pandas as pd
 import pymongo
 
-'''
-
-class Recipes(object):
-    def __init__(self, filename=None):
-        try:
-            conn=pymongo.MongoClient("mongodb://god:god@ds113938.mlab.com:13938/app")
-            print ("Connected successfully!!!")
-        except pymongo.errors.ConnectionFailure:
-            print ("Could not connect to MongoDB: %s" % e )
-        db = conn['app']
-        self.collection = db.recipes
-        if filename==None:
-            self.recipes = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-        else:
-            self.recipes = pd.read_json(path_or_buf=filename).T
-            self.recipes = self.recipes.reset_index()
-            self.recipes.columns = ['name','c','i','l','p','s','v']
-            self.recipes['name'] = self.recipes['name'].str.replace('.','')
-            self.collection.insert_many(pd.DataFrame.to_dict(self.recipes,orient='records'))
-            self.recipe = self.recipe.set_index('name')
-
-    def getRecipes(self):
-        if not self.recipes.empty:
-            return self.recipes
-        for d in self.collection.find():
-            self.recipes = self.recipes.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-        self.recipes = self.recipes.set_index('name')
-        return self.recipes
-    
-    def getRecipe(self, name):
-        if self.recipes.empty:
-            self.recipe = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-            for d in self.collection.find({"name":name}):
-                self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-            self.recipe = self.recipe.set_index('name')
-            if self.recipe.empty: print('Recipe not found')
-            return self.recipe
-        if not self.recipes.index.str.contains(name).any(): 
-            print('Recipe not found')
-            return False
-        return self.recipes.loc[name]
-    
-    # TODO: Filter by excluded ingredients
-    # TODO: Filter by average rating
-    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6, avgpoints=0):
-        # I don't know how to pandas
-        
-        self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-        for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
-            self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-        self.filtered = self.filtered.set_index('name')
-        return self.filtered
-
-'''
-
 class Recipes(object):
     def __init__(self, filename=None):
         try:
@@ -90,7 +35,16 @@ class Recipes(object):
         self.recipe = self.recipe.set_index('name')
         return self.recipe
     
-    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6,avgpoints=0):
+    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6,avgpoints=0, toavoid=[]):
+        if not self.recipes.empty:
+            self.aux = self.recipes
+            self.aux['recipename'] = self.aux.index
+            self.aux = self.aux[[len(self.aux['l'][j]) <= maxing for j in range(len(self.aux['l']))]]
+            self.aux = self.aux[self.aux['recipename'].str.contains(name)]
+            self.aux = self.aux[self.aux['c']+self.aux['p']<=maxtime]
+            self.aux = self.aux[[not np.any([j in i for i in self.aux['l'][k] for j in toavoid]) for k in range(len(self.aux['l']))]]
+            del self.aux['recipename']
+            return self.aux
         self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
         for d in self.collection.find({"c":{"$lte":maxtime},"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
             self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
