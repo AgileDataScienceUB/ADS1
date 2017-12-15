@@ -8,3 +8,6 @@ Pandas
 bs4
 numpy
 requests
+Numpy
+
+
