@@ -128,18 +128,29 @@ class Recipes(object):
         return self.recipes
     
     def getRecipe(self, name):
-        if self.recipes.empty:
-            self.recipe = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-            for d in self.collection.find({"name":name}):
-                self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-            self.recipe = self.recipe.set_index('name')
-
-            if self.recipe.empty: print('Recipe not found')
-            return self.recipe
-        if not self.recipes.index.str.contains(name).any(): 
-            print('Recipe not found')
-            return False
-        return self.recipes.loc[name]
+        self.recipe = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
+        for d in self.collection.find({"name":name}):
+            self.recipe = self.recipe.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
+        self.recipe = self.recipe.set_index('name')
+        return self.recipe
+    
+    def getFilteredRecipes(self, name=None, maxtime=1e6, maxing=1e6,avgpoints=0, toavoid=[]):
+        maxtime = int(maxtime)
+        maxing = int(maxing)
+        if not self.recipes.empty:
+            self.aux = self.recipes
+            self.aux['recipename'] = self.aux.index
+            self.aux = self.aux[[len(self.aux['l'][j]) <= maxing for j in range(len(self.aux['l']))]]
+            self.aux = self.aux[self.aux['recipename'].str.contains(name)]
+            self.aux = self.aux[self.aux['c']+self.aux['p']<=maxtime]
+            self.aux = self.aux[[not np.any([j in i for i in self.aux['l'][k] for j in toavoid]) for k in range(len(self.aux['l']))]]
+            del self.aux['recipename']
+            return self.aux
+        self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
+        for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
+            self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
+        self.filtered = self.filtered.set_index('name')
+        return self.filtered
 
     def BBCurl(self, url):
         base = "https://www.bbc.co.uk/food/recipes/"
@@ -156,7 +167,10 @@ class Recipes(object):
         else:
             img = None
 
-        description = soup.find('p', {"class" : "recipe-description__text"}).text
+        try:
+            description = soup.find('p', {"class" : "recipe-description__text"}).text
+        except:
+            description = ""
 
         if(method):
             methodAux = soup.find_all('p', {"class" : "recipe-method__list-item-text"})
@@ -177,26 +191,6 @@ class Recipes(object):
         link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
         img, method, description = self.readSourceBBC(link, im, True)
         return img, method, description
-
-
-    
-    # TODO: Filter by excluded ingredients
-    # TODO: Filter by average rating
-    def getFilteredRecipes(self, name=' ', maxtime=1e6, maxing=1e6, avgpoints=0):
-        # I don't know how to pandas
-        '''
-        if not self.recipes.empty:
-            self.aux = self.recipes
-            self.aux['recipename'] = self.aux.index
-            self.aux = self.aux[[i<=maxing for i in [len(self.aux['l'][i]) for i in range(len(self.aux['l']))]]][self.aux['recipename'].str.contains(name)][self.aux['c']+self.aux['p']<=maxtime]
-            del self.aux['recipename']
-            return self.aux
-        '''
-        self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','v'])
-        for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
-            self.filtered = self.filtered.append(pd.DataFrame.from_dict(d, orient='index').T,ignore_index=True)
-        self.filtered = self.filtered.set_index('name')
-        return self.filtered
 
 
     def getRecipesRecommender(self, filtered_recipes, current_user,a):

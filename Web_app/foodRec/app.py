@@ -23,7 +23,7 @@ import json
 import bson
 import pandas as pd
 import numpy as np
-from . import recolib 
+from . import recolib
 
 import os
 
@@ -44,7 +44,8 @@ login_manager = LoginManager()
 login_manager.setup_app(app)
 login_manager.login_view = 'login'
 
-recipes = Recipes().getRecipes()
+recipeClass = Recipes()
+recipes = recipeClass.getRecipes()
 recipes['img'] = np.nan
 recipes['description'] = np.nan
 recipes['pred_rating'] = np.zeros(len(recipes.index))
@@ -89,6 +90,9 @@ def login():
 		password = form.password.data.lower().strip()
 		user = mongo.db.users.find_one({"username": form.username.data})
 		if user and User.validate_login(user['password'], form.password.data):
+			allergiesAux = user['allergies']
+			allergies = allergiesAux.split(',')
+			recipes = recipeClass.getFilteredRecipes("", 1e6, 1e6, 0, allergies)
 			user_obj = User(user['username'])
 			login_user(user_obj)
 			return redirect(url_for('user', username=username))
@@ -133,33 +137,35 @@ def rateRecipe():
 
 @app.route('/recipes/', methods=['GET', 'POST'])
 def recipes_list():
+	username = current_user.get_id()
 	recipes_filter = recipes
 	recipes_ordered = recipes
-	pred_rating = []
+	pred_rating = pd.Series([None]*recipes_ordered.shape[0], index = recipes_ordered.index)
+	allergies = []
+	if username != None:
+		user = Users().getUser(username)
+		allergiesAux = user['allergies']
+		allergies = allergiesAux.split(',')
 	if request.method == 'POST':
-		try:
-			vegan = request.form['vegan']
-			italian = request.form['italian']
-		except:
-			vegan=False
-			italian = False
 		time = request.form['time']
 		ingredients = request.form['ingredients']
 		search = request.form['search']
-		recipes_filter = Recipes().getFilteredRecipes(search, time, ingredients)
+		recipes_filter = recipeClass.getFilteredRecipes(search, time, ingredients,0, allergies)
 		#filter
-		if (len(search) > 0):
-			recipes_ordered,pred_rating = Recipes().getRecipesRecommender(recipes_filter,current_user.username,a)
-
+		if (len(search) > 0 and username!=None):
+			recipes_ordered,pred_rating = Recipes().getRecipesRecommender(recipes_filter,username,a)
+		else:
+			recipes_ordered = recipes_filter
+			pred_rating = pd.Series([None]*recipes_ordered.shape[0], index = recipes_ordered.index)
 	rating = 3
 	#return render_template('recipes/index.html', recipes=recipes_filter.head(100), rating=rating)
-	return render_template('recipes/index.html', recipes=recipes_ordered, rating=rating, pred_rating=pred_rating)
+	return render_template('recipes/index.html', recipes=recipes_ordered.head(100), rating=rating, pred_rating=pred_rating.head(100))
 
 @app.route('/recipes/<recipe_name>/')
 def recipe_detail(recipe_name):
 	username = current_user.get_id()
-	recipe = Recipes().getRecipe(recipe_name)
-	img, method, description = Recipes().getFullRecipe(recipe_name)
+	recipe = recipeClass.getRecipe(recipe_name)
+	img, method, description = recipeClass.getFullRecipe(recipe_name)
 	rating = 3
 	return render_template('recipes/detail.html', recipe=recipe, recipe_name=recipe_name, rating=rating, img=img, method=method, description=description, username=username)
 
@@ -176,8 +182,6 @@ def user(username):
 		user = Users().setUser(username,name,allergies,'')
 		#validation of registration and post to mongo
 	usero = Users().getUser(username)
-	print(usero)
-	print(usero['username'])
 	if(usero['username'] == ""):
 		error = "User not found"
 		return error, 404
