@@ -164,7 +164,7 @@ def recipes_list():
 		recipes_filter = recipeClass.getFilteredRecipes(search, time, ingredients,0, allergies)
 		#filter
 		if (len(search) > 0 and username!=None):
-			recipes_ordered,pred_rating = Recipes().getRecipesRecommender(recipes_filter,username,a)
+			recipes_ordered,pred_rating = recipeClass.getRecipesRecommender(recipes_filter,username,a)
 		else:
 			recipes_ordered = recipes_filter
 			pred_rating = pd.Series([None]*recipes_ordered.shape[0], index = recipes_ordered.index)

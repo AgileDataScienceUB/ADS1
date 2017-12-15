@@ -144,7 +144,10 @@ class Recipes(object):
             self.aux = self.aux[self.aux['recipename'].str.contains(name)]
             self.aux = self.aux[self.aux['c']+self.aux['p']<=maxtime]
             self.aux = self.aux[[not np.any([j in i for i in self.aux['l'][k] for j in toavoid]) for k in range(len(self.aux['l']))]]
-            del self.aux['recipename']
+            try:
+                del self.aux['recipename']
+            except:
+                print('No recipes with this criteria')
             return self.aux
         self.filtered = pd.DataFrame(columns=['name','c','i','l','p','s','url','v'])
         for d in self.collection.find({"name":{"$regex" : name},"$where": '(this.c + this.p) <='+str(maxtime),"$where":'this.l.length<='+str(maxing)}):
