@@ -191,8 +191,8 @@ class Recipes(object):
         #im = False
         #if recipe['i'] == 1:
         #    im = True
-        im = True
-        link = "www_bbc_co_uk_food_recipes_almond_and_lemon_polenta_21317"
+        im = recipe.i.values[0]
+        link = recipe.url.values[0]
         img, method, description = self.readSourceBBC(link, im, True)
         return img, method, description
 
