@@ -29,6 +29,7 @@
       <div class="container header-bar">
         <img class="strawberry" src="/static/assets/fresa.png"></img>
         <a href="{{ url_for('recipes_list') }}" class="header-title">Foodiedoobiedoo</a>
+        <a class="" href="{{ url_for('info') }}"><i class="glyphicon glyphicon-info-sign user-icon"></i></a>
         {% if current_user.is_authenticated %}
         <ul class="nav pull-right">
           <li class="dropdown">

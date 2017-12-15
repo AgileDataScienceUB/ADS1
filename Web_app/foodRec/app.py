@@ -91,7 +91,11 @@ def login():
 		user = mongo.db.users.find_one({"username": form.username.data})
 		if user and User.validate_login(user['password'], form.password.data):
 			allergiesAux = user['allergies']
-			allergies = allergiesAux.split(',')
+			print(type(allergiesAux))
+			if isinstance(allergiesAux, list):
+				allergies = allergiesAux
+			else:
+				allergies = allergiesAux.split(',')
 			recipes = recipeClass.getFilteredRecipes("", 1e6, 1e6, 0, allergies)
 			user_obj = User(user['username'])
 			login_user(user_obj)
@@ -128,6 +132,10 @@ def registration():
 def index():
   	return redirect(url_for('recipes_list'))
 
+@app.route('/info')
+def info():
+	return render_template('info.html')
+
 @app.route('/rateRecipe', methods=['POST'])
 def rateRecipe():
 	rating = request.form['rating']
@@ -145,7 +153,10 @@ def recipes_list():
 	if username != None:
 		user = Users().getUser(username)
 		allergiesAux = user['allergies']
-		allergies = allergiesAux.split(',')
+		if isinstance(allergiesAux, list):
+			allergies = allergiesAux
+		else:
+			allergies = allergiesAux.split(',')
 	if request.method == 'POST':
 		time = request.form['time']
 		ingredients = request.form['ingredients']

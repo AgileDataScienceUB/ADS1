@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container info-page" style="height:450px;overflow:auto;background-color:#ffffff;padding:10px;font-size:17px">
+	<p>Being clueless about what to cook ? Having a dinner and not knowing how to impress your guests? 
+	Tired to think about your dishes and eating again the same salad?</p>
+	<p>With <span style="color: #fd4444;font-weight:bold"> Foodiedoobiedoo</span> you will not encounter yourself in this situation anymore. With its sophisticated and highly performant recommender engine it will guide you through the most impressive tastes and flavours of the contemporary gourmet food recipes. Let Foodiedoobiedoo decide what to eat for you !!</p>
+	<p>How it works :</p>
+	<p><strong>1.-</strong> Create your <strong>user account</strong>. Choose a nice username and an easy to remember (but at the same time hard to steal) password.</p>
+	<img src="{{url_for('static', filename='./assets/login.png')}}" style="height:300px;display:block;margin:0 auto;margin-bottom:20px"></img>
+	<p><strong>2.-</strong>Remember that if you don’t <strong>log in</strong> with an account, it will be impossible for us to recognise you and we won’t be able to recommend you some tasty food. Don’t forget to be specific with your <strong>allergies and intolerances</strong> !!
+</p>
+	<img src="{{url_for('static', filename='./assets/profile.png')}}" style="height:200px;display:block;margin:0 auto;"></img>
+	<p><strong>3.-</strong> A new Gourmet is in town ! From here you can select your <strong>preferences</strong> and the principal ingredient of your future star dish.</p>
+	<img src="{{url_for('static', filename='./assets/filters.png')}}" style="height:300px;display:block;margin:0 auto;margin-bottom:20px"></img>
+	<p><strong>4.-</strong> Don&rsquo;t worry! Because we know you a lot, we will propose you the recipes that suits you better&hellip; So give us the chance to <strong>surprise you!</strong></p>
+	<img src="{{url_for('static', filename='./assets/recipes.png')}}" style="height:300px;display:block;margin:0 auto;margin-bottom:20px"></img>
+	<p><strong>5.-</strong> Now you can enter and see the <strong>details</strong> of the selected dish. And don’t forget to <strong>rate the recipe</strong> once you have cooked it and enjoyed your dish, so you can help us improve our recommendations of other users like you …. Let&rsquo;s cook and have fun ! Foodiedoobiedoo !!!!!!</p>
+	<img src="{{url_for('static', filename='./assets/recipe.png')}}" style="height:200px;display:block;margin:0 auto;"></img>
+</div>
+{% endblock main %}
