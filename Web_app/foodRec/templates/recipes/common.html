@@ -21,7 +21,7 @@
                 <a  class="recipe-detail-title-title" href="{{ url_for('recipe_detail', recipe_name=recipe.name) }}" >{{ recipe.name }}</a>
               </div>
             </div>
-
+<!--
             <div class="col-xs-4 recipe-rating">
               <div class="rating-s">
                 {% if rating >= 5 %}
@@ -51,6 +51,7 @@
                 {% endif %}
               </div>
             </div>
+-->
           </div>
           <div class="row recipe-detail-time">
             <div class="col-xs-4">Total time: {{ recipe.c + recipe.p }} minutes</div>
